@@ -358,12 +358,6 @@ in
   programs.waybar = {
     enable = true;
     package = pkgs.unstable.waybar-hyprland;
-    # package = pkgs.waybar.overrideAttrs (oldAttrs: {
-    #   mesonFlags = oldAttrs.mesonFlags ++ [ "-Dexperimental=true" ];
-    #   postPatch = ''
-    #     sed -i -e 's/zext_workspace_handle_v1_activate(workspace_handle_);/const std::string command = "hyprctl dispatch workspace " + name_;\n\tsystem(command.c_str());/g' src/modules/wlr/workspace_manager.cpp
-    #   '';
-    # });
     # systemd = {
     #   enable = true;
     #   target = "hyprland-session.target";
