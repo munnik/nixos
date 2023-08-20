@@ -7,7 +7,7 @@ let
   hyprland = (import flake-compat {
     src = builtins.fetchTarball {
       url = "https://github.com/hyprwm/Hyprland/archive/master.tar.gz";
-      sha256 = "11wv37llcrwmf4xilsm20lfnp5zx96r3lgq0zphr8hkbsgszfivz";
+      sha256 = "0gw8vfbjbly1lvzd6v6ydawqx5jmqvvj5fyrhb6i3mnjapv3c0mb";
     };
   }).defaultNix;
 
@@ -170,23 +170,18 @@ in
   wayland.windowManager.hyprland = {
     enable = true;
     enableNvidiaPatches = true;
+    recommendedEnvironment = true;
     extraConfig = ''
       monitor=,highres,auto,1
       env = GDK_SCALE,1
       env = GDK_BACKEND,wayland,x11
-      env = XCURSOR_SIZE,32
-      env = XCURSOR_THEME,Bibata-Modern-Classic
+      env = LIBVA_DRIVER_NAME,nvidia
       # https://github.com/hyprwm/Hyprland/issues/1878
-      #env = LIBVA_DRIVER_NAME,nvidia
-      #env = XDG_SESSION_TYPE,wayland
       #env = GBM_BACKEND,nvidia-drm
-      #env = __GLX_VENDOR_LIBRARY_NAME,nvidia
+      env = __GLX_VENDOR_LIBRARY_NAME,nvidia
       env = WLR_NO_HARDWARE_CURSORS,1
-      #env = WLR_DRM_DEVICES,/dev/dri/card1:/dev/dri/card0
-      #env = NIXOS_OZONE_WL,"1"
-      env = XDG_SESSION_TYPE,wayland
-      env = XDG_CURRENT_DESKTOP,Hyprland
-      env = XDG_SESSION_DESKTOP,Hyprland
+      env = WLR_DRM_DEVICES,/dev/dri/card1:/dev/dri/card0
+      env = NIXOS_OZONE_WL,"1"
       exec-once=xprop -root -f _XWAYLAND_GLOBAL_OUTPUT_SCALE 32c -set _XWAYLAND_GLOBAL_OUTPUT_SCALE 1
       exec-once=${pkgs.swww}/bin/swww init
       exec-once=${pkgs.swww}/bin/swww img ${wallpaperPath}
