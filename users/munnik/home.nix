@@ -518,16 +518,15 @@ in
         };
         cpu = {
           interval = 1;
-          format = "{}% 󰻠";
-          max-length = 10;          
+          format = "󰻠 {}% @ {avg_frequency}GHz";
         };
         memory = {
           interval = 1;
-          format = "{}% ";
+          format = " {}%";
         };          
         disk = {
           interval = 10;
-          format = "{percentage_used}% 󰋊";
+          format = "󰋊 {percentage_used}%";
         };          
       };
     };
