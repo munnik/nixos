@@ -182,6 +182,7 @@ in
       env = WLR_NO_HARDWARE_CURSORS,1
       env = WLR_DRM_DEVICES,/dev/dri/card1:/dev/dri/card0
       env = NIXOS_OZONE_WL,"1"
+      env = MOZ_ENABLE_WAYLAND,1
       exec-once=xprop -root -f _XWAYLAND_GLOBAL_OUTPUT_SCALE 32c -set _XWAYLAND_GLOBAL_OUTPUT_SCALE 1
       exec-once=${pkgs.swww}/bin/swww init
       exec-once=${pkgs.swww}/bin/swww img ${wallpaperPath}
