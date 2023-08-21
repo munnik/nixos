@@ -493,12 +493,12 @@ in
         };
         network = {
           interface = "wlp*";
-          format-wifi = "  {signalStrength}%";
+          format-wifi = " {signalStrength}%";
           format-ethernet = "{ipaddr}/{cidr} ";
           tooltip-format = "{essid} - {ifname} via {gwaddr} ";
           format-linked = "{ifname} (No IP) ";
           format-disconnected = "Disconnected ⚠";
-          format-alt = "{ifname}:{essid} {ipaddr}/{cidr}";
+          format-alt = " {ifname}:{essid} {ipaddr}/{cidr}";
         };
         "network#wireguard" = {
           interface = "wg*";
@@ -507,7 +507,7 @@ in
           tooltip-format = "{ipaddr}/{cidr} - {ifname} via {gwaddr} ";
           format-linked = "{ifname} (No IP) ";
           format-disconnected = " down";
-          format-alt = "{ifname} {ipaddr}/{cidr}";
+          format-alt = " {ifname} {ipaddr}/{cidr}";
         };
         bluetooth = {
           format = " {status}";
