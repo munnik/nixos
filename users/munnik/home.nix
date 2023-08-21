@@ -435,7 +435,7 @@ in
         };
         backlight = {
           device = "intel_backlight";
-          format = "{icon} {percent}%";
+          format = "{icon} {percent:3}%";
           format-icons = ["󰃞" "󰃟" "󰃠"];
           on-scroll-up = "${pkgs.brightnessctl}/bin/brightnessctl set 1%+";
           on-scroll-down = "${pkgs.brightnessctl}/bin/brightnessctl set 1%-";
@@ -451,15 +451,15 @@ in
             warning = 50;
             critical = 10;
           };
-          format = "{icon} {capacity}%";
-          format-charging = " {capacity}%";
-          format-plugged = " {capacity}%";
+          format = "{icon} {capacity:3}%";
+          format-charging = " {capacity:3}%";
+          format-plugged = " {capacity:3}%";
           format-alt = "{icon} {time}";
           format-icons = ["󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹"];
         };
         pulseaudio = {
-          format = "{icon} {volume}%";
-          format-muted = " Muted";
+          format = "{icon} {volume:3}%";
+          format-muted = "󰸈 {volume:3}%";
           on-click = "${pkgs.alsa-utils}/bin/amixer set Master 1+ toggle";
           on-scroll-up = "${pkgs.alsa-utils}/bin/amixer sset Master 1%+";
           on-scroll-down = "${pkgs.alsa-utils}/bin/amixer sset Master 1%-";
@@ -477,8 +477,8 @@ in
         };
         "pulseaudio#microphone" = {
           format = "{format_source}";
-          format-source = " {volume}%";
-          format-source-muted = "󰍭 {volume}%";
+          format-source = " {volume:3}%";
+          format-source-muted = "󰍭 {volume:3}%";
           on-click = "${pkgs.alsa-utils}/bin/amixer set Capture 1+ toggle";
           on-scroll-up = "${pkgs.alsa-utils}/bin/amixer sset Capture 1%+";
           on-scroll-down = "${pkgs.alsa-utils}/bin/amixer sset Capture 1%-";
@@ -487,13 +487,13 @@ in
         };
         temperature = {
           thermal-zone = 1;
-          format = "{temperatureC}°C ";
+          format = " {temperatureC:2}°C";
           critical-threshold = 80;
-          format-critical = "{temperatureC}°C ";
+          format-critical = " {temperatureC:2}°C";
         };
         network = {
           interface = "wlp*";
-          format-wifi = "󰖩 {signalStrength}%";
+          format-wifi = "󰖩 {signalStrength:2}%";
           format-ethernet = "{ipaddr}/{cidr} ";
           tooltip-format = "{essid} - {ifname} via {gwaddr} ";
           format-linked = "{ifname} (No IP) ";
@@ -502,7 +502,7 @@ in
         };
         "network#wireguard" = {
           interface = "wg*";
-          format-wifi = "󰖩 {signalStrength}%";
+          format-wifi = "󰖩 {signalStrength:2}%";
           format-ethernet = " up";
           tooltip-format = "{ipaddr}/{cidr} - {ifname} via {gwaddr} ";
           format-linked = "{ifname} (No IP) ";
@@ -519,15 +519,15 @@ in
         };
         cpu = {
           interval = 1;
-          format = "󰻠 {}% @ {avg_frequency}GHz";
+          format = " {:5}% 󰜎 {avg_frequency:4}GHz";
         };
         memory = {
           interval = 1;
-          format = " {}%";
+          format = " {:2}%";
         };          
         disk = {
           interval = 10;
-          format = "󰋊 {percentage_used}%";
+          format = "󰋊 {percentage_used:2}%";
         };          
       };
     };
@@ -607,7 +607,7 @@ tooltip {
 #backlight {
   background: @base;
   color: @text;
-  padding: 0 3px 0 5px;
+  padding: 0 8px 0 8px;
   border: 2px solid @mantle;
 }
 
@@ -685,7 +685,6 @@ tooltip {
 }
 
 #bluetooth {
-  color: @blue;
   border-left: 0;
   border-right: 0;
 } 
@@ -701,7 +700,6 @@ tooltip {
 }
 
 #battery {
-  color: @green;
   border-left: 0;
   border-right: 0;
 }
