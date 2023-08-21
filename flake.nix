@@ -8,14 +8,14 @@
   };
 
   outputs = { nixpkgs, nixpkgs-unstable, home-manager, ... }: 
-  let
+    let
     system = "x86_64-linux";
-    overlay-nixpkgs = final: prev: {
-      unstable = import nixpkgs-unstable {
-        inherit system;
-        config.allowUnfree = true;
-      };
+  overlay-nixpkgs = final: prev: {
+    unstable = import nixpkgs-unstable {
+      inherit system;
+      config.allowUnfree = true;
     };
+  };
   in {
     nixosConfigurations = {
       turing = nixpkgs.lib.nixosSystem {
