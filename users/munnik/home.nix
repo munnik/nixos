@@ -1,16 +1,5 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, flake-inputs, ... }:
 let
-  flake-compat = builtins.fetchTarball {
-    url = "https://github.com/edolstra/flake-compat/archive/master.tar.gz";
-    sha256 = "1prd9b1xx8c0sfwnyzkspplh30m613j42l1k789s521f4kv4c2z2";
-  };
-  hyprland = (import flake-compat {
-    src = builtins.fetchTarball {
-      url = "https://github.com/hyprwm/Hyprland/archive/master.tar.gz";
-      sha256 = "0bxm5kivahmsf5nqkphv03izv4fqzm40v1009la3jir574mjlx7v";
-    };
-  }).defaultNix;
-
   userName = "munnik";
   userId = "1000";
   groupId = "100";
@@ -21,14 +10,13 @@ let
   screensaverTimeout = 300;
 in
 {
+  home.username = "munnik";
+  home.homeDirectory = /home/munnik;
+  home.stateVersion = "23.05";
   imports = [
-    hyprland.homeManagerModules.default
+    flake-inputs.hyprland.homeManagerModules.default
   ];
 
-  # Home Manager needs a bit of information about you and the paths it should
-  # manage.
-  home.username = "${userName}";
-  home.homeDirectory = "${homeDirectory}";
 
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -37,7 +25,6 @@ in
   # You should not change this value, even if you update Home Manager. If you do
   # want to update the value, then make sure to first check the Home Manager
   # release notes.
-  home.stateVersion = "23.05"; # Please read the comment before changing.
 
   # The home.packages option allows you to install Nix packages into your
   # environment.
@@ -49,10 +36,14 @@ in
     brightnessctl
     delta
     delve
+    exa
     fd
     feh
     ffmpeg_6-full
+    flake-inputs.hyprland-contrib.packages.${pkgs.system}.grimblast
+    flake-inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}.keepmenu
     fontconfig
+    freecad
     fzf
     fzf-zsh
     gcc
@@ -100,12 +91,15 @@ in
     thunderbird
     transmission-remote-gtk
     tree-sitter
-    unstable.keepmenu
     unzip
     wget
     wireshark
     wl-clipboard
+    xdg-desktop-portal
+    xdg-desktop-portal-gnome
+    xdg-desktop-portal-gtk
     xdg-desktop-portal-hyprland
+    xdg-desktop-portal-wlr
     ydotool
     zip
     zsh-command-time
@@ -165,29 +159,34 @@ in
   #
   # if you don't want to manage your shell through Home Manager.
   home.sessionVariables = {
+      # https://github.com/hyprwm/Hyprland/issues/1878
+      GBM_BACKEND = "nvidia-drm";
+      GDK_BACKEND = "wayland,x11";
+      GDK_SCALE = "1";
+      __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+      LIBVA_DRIVER_NAME = "nvidia";
+      MOZ_ENABLE_WAYLAND = "1";
+      NIXOS_OZONE_WL = "1";
+      WLR_DRM_DEVICES = "/dev/dri/card1:/dev/dri/card0";
+      WLR_NO_HARDWARE_CURSORS = "1";
+      XCURSOR_SIZE = "32";
+      XCURSOR_THEME = "Bibata-Modern-Classic";
+      XDG_CURRENT_DESKTOP = "Hyprland";
+      XDG_SESSION_DESKTOP = "Hyprland";
+      XDG_SESSION_TYPE = "wayland";
   };
 
   wayland.windowManager.hyprland = {
     enable = true;
     enableNvidiaPatches = true;
-    recommendedEnvironment = true;
+    #recommendedEnvironment = true;
     extraConfig = ''
       monitor=,highres,auto,1
-      env = GDK_SCALE,1
-      env = GDK_BACKEND,wayland,x11
-      env = LIBVA_DRIVER_NAME,nvidia
-      # https://github.com/hyprwm/Hyprland/issues/1878
-      #env = GBM_BACKEND,nvidia-drm
-      env = __GLX_VENDOR_LIBRARY_NAME,nvidia
-      env = WLR_NO_HARDWARE_CURSORS,1
-      env = WLR_DRM_DEVICES,/dev/dri/card1:/dev/dri/card0
-      env = NIXOS_OZONE_WL,"1"
-      env = MOZ_ENABLE_WAYLAND,1
       exec-once=xprop -root -f _XWAYLAND_GLOBAL_OUTPUT_SCALE 32c -set _XWAYLAND_GLOBAL_OUTPUT_SCALE 1
       exec-once=${pkgs.swww}/bin/swww init
       exec-once=${pkgs.swww}/bin/swww img ${wallpaperPath}
       exec-once=${pkgs.ydotool}/bin/ydotoold --socket-path=/run/user/${userId}/.ydotool_socket --socket-own=${userId}:${groupId}
-      exec-once=${pkgs.unstable.waybar-hyprland}/bin/waybar
+      exec-once=${flake-inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}.waybar}/bin/waybar
       input {
         kb_layout = us
         kb_variant =
@@ -358,7 +357,7 @@ in
 
   programs.waybar = {
     enable = true;
-    package = pkgs.unstable.waybar-hyprland;
+    package = flake-inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}.waybar;
     # systemd = {
     #   enable = true;
     #   target = "hyprland-session.target";
@@ -493,7 +492,7 @@ in
         };
         network = {
           interface = "wlp*";
-          format-wifi = "󰖩 {signalStrength:2}%";
+          format-wifi = "󰖩 {signalStrength:3}%";
           format-ethernet = "{ipaddr}/{cidr} ";
           tooltip-format = "{essid} - {ifname} via {gwaddr} ";
           format-linked = "{ifname} (No IP) ";
@@ -502,7 +501,7 @@ in
         };
         "network#wireguard" = {
           interface = "wg*";
-          format-wifi = "󰖩 {signalStrength:2}%";
+          format-wifi = "󰖩 {signalStrength:3}%";
           format-ethernet = " up";
           tooltip-format = "{ipaddr}/{cidr} - {ifname} via {gwaddr} ";
           format-linked = "{ifname} (No IP) ";
@@ -519,7 +518,7 @@ in
         };
         cpu = {
           interval = 1;
-          format = " {:5}% 󰜎 {avg_frequency:4}GHz";
+          format = " {usage:3}% 󰜎 {avg_frequency:4}GHz";
         };
         memory = {
           interval = 1;
