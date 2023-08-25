@@ -2,13 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running `nixos-help`).
 
-{ config, pkgs, ... }:
-let
-  unstable = import <nixos-unstable> {
-      config = { allowUnfree = true; };
-    };
-in
-{
+{ config, pkgs, lib, ... }: {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
@@ -144,6 +138,15 @@ in
     #     wayland = true;
     # };
   };
+  services.dbus.enable = true;
+  xdg.portal = {
+    enable = true;
+    wlr.enable = true;
+    extraPortals = [
+      pkgs.xdg-desktop-portal-gtk
+    ];
+  };
+
 
   hardware.nvidia = {
     # prime = {
@@ -170,11 +173,15 @@ in
     enable = true;
     settings = {
       default_session = {
-        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd Hyprland";
+        command = "${pkgs.cage}/bin/cage -s -- ${pkgs.greetd.gtkgreet}/bin/gtkgreet";
         user = "greeter";
       };
     };
   };
+
+  environment.etc."greetd/environments".text = ''
+    Hyprland
+  '';
 
   environment.variables = {
     LIBSEAT_BACKEND = "logind";
@@ -327,7 +334,6 @@ in
   environment.systemPackages = with pkgs; [
     neovim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
 
-    greetd.tuigreet
     networkmanagerapplet
     catppuccin-cursors
     git
@@ -338,6 +344,8 @@ in
     gnupg
 
     home-manager
+
+    cage
   ];
 
 
@@ -359,11 +367,6 @@ in
       nerdfonts
     ];
     fontDir.enable = true;
-  };
-
-  xdg.portal = {
-    enable = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
   };
 
   virtualisation.docker.enable = true;

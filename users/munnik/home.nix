@@ -13,10 +13,6 @@ in
   home.username = "munnik";
   home.homeDirectory = /home/munnik;
   home.stateVersion = "23.05";
-  imports = [
-    flake-inputs.hyprland.homeManagerModules.default
-  ];
-
 
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -93,13 +89,14 @@ in
     tree-sitter
     unzip
     wget
+    wayland-protocols
+    wayland-utils
     wireshark
     wl-clipboard
-    xdg-desktop-portal
-    xdg-desktop-portal-gnome
+    wlroots
     xdg-desktop-portal-gtk
     xdg-desktop-portal-hyprland
-    xdg-desktop-portal-wlr
+    xwayland
     ydotool
     zip
     zsh-command-time
@@ -127,7 +124,7 @@ in
       target = "keepmenu/config.ini";
       text = ''
         [dmenu]
-        dmenu_command = ${pkgs.rofi-wayland}/bin/rofi -dmenu -i -theme catppuccin-mocha-keepmenu
+        dmenu_command = rofi -dmenu -i -theme catppuccin-mocha-keepmenu
 
         [dmenu_passphrase]
         obscure = True
@@ -136,9 +133,9 @@ in
         database_1 = ${homeDirectory}/Documents/KeePassXC/default.kdbx
 
         pw_cache_period_min = 5
-        editor = ${pkgs.neovim}/bin/nvim
-        terminal = ${pkgs.kitty}/bin/kitty
-        type_library = ${pkgs.ydotool}/bin/ydotool
+        editor = nvim
+        terminal = kitty
+        type_library = ydotool
 
         hide_groups = Recycle Bin      
       '';
@@ -183,10 +180,9 @@ in
     extraConfig = ''
       monitor=,highres,auto,1
       exec-once=xprop -root -f _XWAYLAND_GLOBAL_OUTPUT_SCALE 32c -set _XWAYLAND_GLOBAL_OUTPUT_SCALE 1
-      exec-once=${pkgs.swww}/bin/swww init
-      exec-once=${pkgs.swww}/bin/swww img ${wallpaperPath}
-      exec-once=${pkgs.ydotool}/bin/ydotoold --socket-path=/run/user/${userId}/.ydotool_socket --socket-own=${userId}:${groupId}
-      exec-once=${flake-inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}.waybar}/bin/waybar
+      exec-once=swww init
+      exec-once=swww img ${wallpaperPath}
+      exec-once=ydotoold --socket-path=/run/user/${userId}/.ydotool_socket --socket-own=${userId}:${groupId}
       input {
         kb_layout = us
         kb_variant =
@@ -229,17 +225,17 @@ in
       gestures {
         workspace_swipe = off
       }
-      bind = SUPER, Return, exec, ${pkgs.kitty}/bin/kitty /bin/sh -c '${pkgs.macchina}/bin/macchina && exec ${pkgs.zsh}/bin/zsh'
+      bind = SUPER, Return, exec, kitty /bin/sh -c 'macchina && exec zsh'
       bind = SUPER, W, killactive, 
       bind = SUPER, M, fullscreen, 
       bind = SUPER, E, exec, Thunar
       bind = SUPER, F, togglefloating, 
       bind = SUPER, F, centerwindow, 
-      bind = SUPER, space, exec, ${pkgs.rofi-wayland}/bin/rofi -show drun -show-icons
+      bind = SUPER, space, exec, rofi -show drun -show-icons
       bind = SUPER, S, exec, grimblast copy active
       bind = SUPER SHIFT, S, exec, grimblast copy area
       bind = SUPER, J, togglesplit, # dwindle
-      bind = SUPER, P, exec, ${pkgs.keepmenu}/bin/keepmenu
+      bind = SUPER, P, exec, keepmenu
       bind = SUPER, left, movefocus, l
       bind = SUPER, right, movefocus, r
       bind = SUPER, up, movefocus, u
@@ -290,13 +286,13 @@ in
     events = [
       { 
         event = "before-sleep"; 
-        command = "${pkgs.swaylock-effects}/bin/swaylock -f";
+        command = "swaylock -f";
       }
     ];
     timeouts = [
       { 
         timeout = screensaverTimeout; 
-        command = "${pkgs.grim}/bin/grim -c ${lockImagePath} && ${pkgs.swaylock-effects}/bin/swaylock";
+        command = "grim -c ${lockImagePath} && swaylock";
       }
     ];
   };
@@ -358,10 +354,10 @@ in
   programs.waybar = {
     enable = true;
     package = flake-inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}.waybar;
-    # systemd = {
-    #   enable = true;
-    #   target = "hyprland-session.target";
-    # };
+    systemd = {
+      enable = true;
+      target = "hyprland-session.target";
+    };
     settings = {
       mainBar = {
         position = "top";
@@ -371,7 +367,7 @@ in
         gtk-layer-shell = true;
         modules-left = [
           "clock"
-          "wlr/workspaces" 
+          "hyprland/workspaces"
         ];
         modules-center = [
           "hyprland/window"
@@ -389,19 +385,10 @@ in
           "memory"
           "disk"
         ];
-        "wlr/workspaces" = {
+        "hyprland/workspaces" = {
           format = "{icon}";
           persistent_workspaces = {
-            "1" = [];
-            "2" = [];
-            "3" = [];
-            "4" = [];
-            "5" = [];
-            "6" = [];
-            "7" = [];
-            "8" = [];
-            "9" = [];
-            "10" = [];
+            "*" = 10;
           };
           format-icons = {
             "1" = "1";
@@ -419,8 +406,8 @@ in
             default = "";
           };
           on-click = "activate";
-          on-scroll-down = "${pkgs.hyprland}/bin/hyprctl dispatch workspace e+1";
-          on-scroll-up = "${pkgs.hyprland}/bin/hyprctl dispatch workspace e-1";
+          on-scroll-down = "hyprctl dispatch workspace e+1";
+          on-scroll-up = "hyprctl dispatch workspace e-1";
           sort-by-number = true;
         };
         tray = {
@@ -436,8 +423,8 @@ in
           device = "intel_backlight";
           format = "{icon} {percent:3}%";
           format-icons = ["󰃞" "󰃟" "󰃠"];
-          on-scroll-up = "${pkgs.brightnessctl}/bin/brightnessctl set 1%+";
-          on-scroll-down = "${pkgs.brightnessctl}/bin/brightnessctl set 1%-";
+          on-scroll-up = "brightnessctl set 1%+";
+          on-scroll-down = "brightnessctl set 1%-";
           reverse-mouse-scrolling = true;
           scroll-step = 1;
           min-length = 6;
@@ -459,9 +446,9 @@ in
         pulseaudio = {
           format = "{icon} {volume:3}%";
           format-muted = "󰸈 {volume:3}%";
-          on-click = "${pkgs.alsa-utils}/bin/amixer set Master 1+ toggle";
-          on-scroll-up = "${pkgs.alsa-utils}/bin/amixer sset Master 1%+";
-          on-scroll-down = "${pkgs.alsa-utils}/bin/amixer sset Master 1%-";
+          on-click = "amixer set Master 1+ toggle";
+          on-scroll-up = "amixer sset Master 1%+";
+          on-scroll-down = "amixer sset Master 1%-";
           reverse-mouse-scrolling = true;
           scroll-step = 1;
           format-icons = {
@@ -478,9 +465,9 @@ in
           format = "{format_source}";
           format-source = " {volume:3}%";
           format-source-muted = "󰍭 {volume:3}%";
-          on-click = "${pkgs.alsa-utils}/bin/amixer set Capture 1+ toggle";
-          on-scroll-up = "${pkgs.alsa-utils}/bin/amixer sset Capture 1%+";
-          on-scroll-down = "${pkgs.alsa-utils}/bin/amixer sset Capture 1%-";
+          on-click = "amixer set Capture 1+ toggle";
+          on-scroll-up = "amixer sset Capture 1%+";
+          on-scroll-down = "amixer sset Capture 1%-";
           reverse-mouse-scrolling = true;
           scroll-step = 1;
         };

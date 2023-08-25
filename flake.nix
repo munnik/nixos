@@ -42,6 +42,7 @@
         inherit pkgs;
         modules = [
           ./users/munnik/home.nix
+          inputs.hyprland.homeManagerModules.default
         ];
         extraSpecialArgs.flake-inputs = inputs;
       };
