@@ -406,8 +406,8 @@ in
             default = "";
           };
           on-click = "activate";
-          on-scroll-down = "hyprctl dispatch workspace e+1";
-          on-scroll-up = "hyprctl dispatch workspace e-1";
+          on-scroll-down = "${pkgs.hyprland}/bin/hyprctl dispatch workspace e+1";
+          on-scroll-up = "${pkgs.hyprland}/bin/hyprctl dispatch workspace e-1";
           sort-by-number = true;
         };
         tray = {
@@ -423,8 +423,8 @@ in
           device = "intel_backlight";
           format = "{icon} {percent:3}%";
           format-icons = ["󰃞" "󰃟" "󰃠"];
-          on-scroll-up = "brightnessctl set 1%+";
-          on-scroll-down = "brightnessctl set 1%-";
+          on-scroll-up = "${pkgs.brightnessctl}/bin/brightnessctl set 1%+";
+          on-scroll-down = "${pkgs.brightnessctl}/bin/brightnessctl set 1%-";
           reverse-mouse-scrolling = true;
           scroll-step = 1;
           min-length = 6;
@@ -446,9 +446,9 @@ in
         pulseaudio = {
           format = "{icon} {volume:3}%";
           format-muted = "󰸈 {volume:3}%";
-          on-click = "amixer set Master 1+ toggle";
-          on-scroll-up = "amixer sset Master 1%+";
-          on-scroll-down = "amixer sset Master 1%-";
+          on-click = "${pkgs.alsa-utils}/bin/amixer set Master 1+ toggle";
+          on-scroll-up = "${pkgs.alsa-utils}/bin/amixer sset Master 1%+";
+          on-scroll-down = "${pkgs.alsa-utils}/bin/amixer sset Master 1%-";
           reverse-mouse-scrolling = true;
           scroll-step = 1;
           format-icons = {
@@ -465,9 +465,9 @@ in
           format = "{format_source}";
           format-source = " {volume:3}%";
           format-source-muted = "󰍭 {volume:3}%";
-          on-click = "amixer set Capture 1+ toggle";
-          on-scroll-up = "amixer sset Capture 1%+";
-          on-scroll-down = "amixer sset Capture 1%-";
+          on-click = "${pkgs.alsa-utils}/bin/amixer set Capture 1+ toggle";
+          on-scroll-up = "${pkgs.alsa-utils}/bin/amixer sset Capture 1%+";
+          on-scroll-down = "${pkgs.alsa-utils}/bin/amixer sset Capture 1%-";
           reverse-mouse-scrolling = true;
           scroll-step = 1;
         };
