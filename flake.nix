@@ -17,6 +17,13 @@
       url = "github:hyprwm/contrib";
       inputs.nixpkgs.follows = "hyprland/nixpkgs";
     };
+    eza.url = "github:eza-community/eza";
+    nixvim = {
+      url = "github:nix-community/nixvim/nixos-23.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # use `nix flake show` to display package content
   };
 
   outputs = { self, nixpkgs, home-manager, ... } @ inputs: 
@@ -43,6 +50,7 @@
         modules = [
           ./users/munnik/home.nix
           inputs.hyprland.homeManagerModules.default
+          inputs.nixvim.homeManagerModules.nixvim     
         ];
         extraSpecialArgs.flake-inputs = inputs;
       };

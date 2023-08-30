@@ -14,6 +14,13 @@ in
   home.homeDirectory = /home/munnik;
   home.stateVersion = "23.05";
 
+  imports = [
+    ./features/go.nix
+    ./features/nvim.nix
+    ./features/helix
+    ./features/git
+  ];
+
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
   # introduces backwards incompatible changes.
@@ -31,11 +38,10 @@ in
     bc
     brightnessctl
     delta
-    delve
-    exa
     fd
     feh
     ffmpeg_6-full
+    flake-inputs.eza.packages.${pkgs.system}.default
     flake-inputs.hyprland-contrib.packages.${pkgs.system}.grimblast
     flake-inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}.keepmenu
     fontconfig
@@ -44,15 +50,7 @@ in
     fzf-zsh
     gcc
     gimp
-    git-secret
     gnumake
-    go
-    gofumpt
-    golines
-    gomodifytags
-    goreleaser
-    gotests
-    gotools
     grim
     haruna
     impl
@@ -60,15 +58,16 @@ in
     keepassxc
     kitty-themes
     languagetool
-    lazygit
     lf
     libnotify
     libreoffice
     librewolf
     lua-language-server
     macchina
+    nil
     nix-zsh-completions
     nodejs_20
+    flake-inputs.nixpkgs-unfree.legacyPackages.${pkgs.system}.notable
     pavucontrol
     perl
     peroxide
@@ -88,6 +87,7 @@ in
     transmission-remote-gtk
     tree-sitter
     unzip
+    flake-inputs.nixpkgs-unfree.legacyPackages.${pkgs.system}.vscode
     wget
     wayland-protocols
     wayland-utils
@@ -119,7 +119,7 @@ in
   };
 
   xdg.configFile = {
-    btop.source = config/btop;
+    btop.source = dotfiles/config/btop;
     keepmenu = {
       target = "keepmenu/config.ini";
       text = ''
@@ -140,7 +140,7 @@ in
         hide_groups = Recycle Bin      
       '';
     };
-    macchina.source = config/macchina;
+    macchina.source = dotfiles/config/macchina;
   };
   xdg.dataFile = {
   };
@@ -225,6 +225,10 @@ in
       gestures {
         workspace_swipe = off
       }
+      misc {
+        disable_hyprland_logo = yes
+        disable_splash_rendering = yes
+      }
       bind = SUPER, Return, exec, kitty /bin/sh -c 'macchina && exec zsh'
       bind = SUPER, W, killactive, 
       bind = SUPER, M, fullscreen, 
@@ -286,13 +290,13 @@ in
     events = [
       { 
         event = "before-sleep"; 
-        command = "swaylock -f";
+        command = "${pkgs.swaylock-effects}/bin/swaylock -f";
       }
     ];
     timeouts = [
       { 
         timeout = screensaverTimeout; 
-        command = "grim -c ${lockImagePath} && swaylock";
+        command = "${pkgs.grim}/bin/grim -c ${lockImagePath} && ${pkgs.swaylock-effects}/bin/swaylock";
       }
     ];
   };
@@ -308,12 +312,12 @@ in
     enable = true;
     font = {
       name = "${font}";
-      size = 11;
+      size = 10;
     };
     theme = "Catppuccin-Mocha";
     shellIntegration.enableZshIntegration = true;
     settings = {
-      background_opacity = "0.3";
+      background_opacity = "0.6";
     };
   };
 
@@ -349,6 +353,58 @@ in
       image = "${lockImagePath}";
       effect-pixelate = 15;
     };
+  };
+
+  programs.tmux = {
+    enable = true;
+    clock24 = true;
+    baseIndex = 1;
+    newSession = true;
+    escapeTime = 0;
+
+    plugins = with pkgs; [
+      tmuxPlugins.sensible
+      tmuxPlugins.catppuccin
+      tmuxPlugins.vim-tmux-navigator
+      tmuxPlugins.better-mouse-mode
+      tmuxPlugins.yank
+    ];
+    extraConfig = ''
+      set-option -sa terminal-features ",xtermkitty:RGB"
+      set-option -g mouse on
+
+      unbind C-b
+      set -g prefix C-Space
+      bind C-Space send-prefix
+
+      # Vim style pane selection
+      bind h select-pane -L
+      bind j select-pane -D 
+      bind k select-pane -U
+      bind l select-pane -R
+
+      bind -n M-Left select-pane -L
+      bind -n M-Right select-pane -R
+      bind -n M-Up select-pane -U
+      bind -n M-Down select-pane -D
+
+      # Shift arrow to switch windows
+      bind -n S-Left  previous-window
+      bind -n S-Right next-window
+                   a
+      # Shift Alt vim keys to switch windows
+      bind -n M-H previous-window
+      bind -n M-L next-window
+
+      set-window-option -g mode-keys vi
+
+      bind-key -T copy-mode-vi v send-keys -X begin-selection
+      bind-key -T copy-mode-vi C-v send-keys -X rectangle-toggle
+      bind-key -T copy-mode-vi y send-keys -X copy-selection-and-cancel
+
+      bind '"' split-window -v -c "#{pane_current_path}"
+      bind % split-window -h -c "#{pane_current_path}"
+    '';
   };
 
   programs.waybar = {
@@ -690,6 +746,35 @@ tooltip {
   border-right: 0;
 }
    '';
+  };
+
+  programs.zsh = {
+    enable = true;
+    enableCompletion = true;
+    enableAutosuggestions = true;
+    enableVteIntegration = true;
+    shellAliases = {
+      eza = "eza --git --group --group-directories-first --header --long --icons --time-style=long-iso";
+    };
+    oh-my-zsh = {
+      enable = true;
+      plugins = [ 
+        "git" 
+        "sudo" 
+        "tmux" 
+      ];
+      theme = "gnzh";
+    };
+  };
+  
+  gtk = {
+    enable = true;
+    theme = {
+      name = "Catppuccin-Mocha";
+      package = pkgs.catppuccin-gtk.override {
+        variant = "mocha";
+      };
+    };
   };
 }
 

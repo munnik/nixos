@@ -216,80 +216,6 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
-  programs.zsh = {
-    enable = true;
-    enableCompletion = true;
-    autosuggestions.enable = true;
-    shellAliases = {
-      vi = "nvim";
-      vim = "nvim";
-      ll = "ls -l";
-      config = "~/bin/config.sh";
-    };
-    ohMyZsh = {
-      enable = true;
-      plugins = [ 
-        "git" 
-        "sudo" 
-        "tmux" 
-      ];
-      theme = "gnzh";
-    };
-  };
-
-  programs.tmux = {
-    enable = true;
-    clock24 = true;
-    baseIndex = 1;
-    newSession = true;
-    escapeTime = 0;
-
-    plugins = with pkgs; [
-      tmuxPlugins.sensible
-      tmuxPlugins.catppuccin
-      tmuxPlugins.vim-tmux-navigator
-      tmuxPlugins.better-mouse-mode
-      tmuxPlugins.yank
-    ];
-
-    extraConfig = ''
-      set-option -sa terminal-features ",xtermkitty:RGB"
-      set-option -g mouse on
-
-      unbind C-b
-      set -g prefix C-Space
-      bind C-Space send-prefix
-
-      # Vim style pane selection
-      bind h select-pane -L
-      bind j select-pane -D 
-      bind k select-pane -U
-      bind l select-pane -R
-
-      bind -n M-Left select-pane -L
-      bind -n M-Right select-pane -R
-      bind -n M-Up select-pane -U
-      bind -n M-Down select-pane -D
-
-      # Shift arrow to switch windows
-      bind -n S-Left  previous-window
-      bind -n S-Right next-window
-
-      # Shift Alt vim keys to switch windows
-      bind -n M-H previous-window
-      bind -n M-L next-window
-
-      set-window-option -g mode-keys vi
-
-      bind-key -T copy-mode-vi v send-keys -X begin-selection
-      bind-key -T copy-mode-vi C-v send-keys -X rectangle-toggle
-      bind-key -T copy-mode-vi y send-keys -X copy-selection-and-cancel
-
-      bind '"' split-window -v -c "#{pane_current_path}"
-      bind % split-window -h -c "#{pane_current_path}"
-    '';
-  };
-
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.munnik = {
     isNormalUser = true;
@@ -310,6 +236,7 @@
     spiceUSBRedirection.enable = true;
   };
   programs.dconf.enable = true;
+  programs.zsh.enable = true;
 
   #services.teamviewer.enable = true;
   programs.thunar.enable = true;
@@ -332,12 +259,8 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    neovim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-
     networkmanagerapplet
     catppuccin-cursors
-    git
-
     virt-manager
 
     pinentry-curses
@@ -350,15 +273,6 @@
 
 
   security.pam.services.swaylock = {};
-
-  programs.neovim = {
-    enable = true;
-    defaultEditor = true;
-    # plugins = with pkgs.vimPlugins; [
-      # nvim-treesitter.withAllGrammars
-      # nvim-dap
-    # ];
-  };
 
   environment.shells = with pkgs; [ zsh ];
 
@@ -402,6 +316,5 @@
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "23.05"; # Did you read the comment?
-
 }
 
