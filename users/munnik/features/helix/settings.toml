@@ -12,6 +12,7 @@ ret = ["move_line_down", "goto_line_start"]
 line-number = "relative"
 cursorline = true
 color-modes = true
+completion-replace = true
 bufferline = "multiple"
 shell = ["zsh", "-c"]
 
