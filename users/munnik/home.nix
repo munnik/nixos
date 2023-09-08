@@ -68,6 +68,7 @@ in
     nix-zsh-completions
     nodejs_20
     flake-inputs.nixpkgs-unfree.legacyPackages.${pkgs.system}.notable
+    flake-inputs.nixpkgs-unfree.legacyPackages.${pkgs.system}.webex
     pavucontrol
     perl
     peroxide
@@ -76,6 +77,7 @@ in
     python311
     ripgrep
     screen
+    shotwell
     signal-desktop
     silver-searcher
     socat
@@ -83,6 +85,7 @@ in
     stylua
     swww
     teams-for-linux
+    # flake-inputs.nixpkgs-unfree.legacyPackages.${pkgs.system}.teamviewer
     thunderbird
     transmission-remote-gtk
     tree-sitter
