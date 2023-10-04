@@ -347,7 +347,7 @@ in
 
   programs.swaylock = {
     enable = true;
-    package = pkgs.swaylock-effects;
+    package = flake-inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}.swaylock-effects;
     settings = {
       ignore-empty-password = true;
       font = "${font}";
@@ -758,6 +758,7 @@ tooltip {
     enableVteIntegration = true;
     shellAliases = {
       eza = "eza --git --group --group-directories-first --header --long --icons --time-style=long-iso";
+      watch = "watch --color";
     };
     oh-my-zsh = {
       enable = true;

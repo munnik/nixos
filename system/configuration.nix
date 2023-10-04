@@ -31,9 +31,9 @@
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
 
-  networking.firewall = {
-    allowedUDPPorts = [ 51820 ]; # Clients and peers can use the same port, see listenport
-  };
+  # networking.firewall = {
+  #   allowedUDPPorts = [ 51820 ]; # Clients and peers can use the same port, see listenport
+  # };
 
   # Enable WireGuard
   networking.wg-quick.interfaces = let
@@ -42,9 +42,9 @@
     # "wg0" is the network interface name. You can name the interface arbitrarily.
     wg0 = {
       address = [ "10.24.0.10/16" ];
-      listenPort = 51820; # to match firewall allowedUDPPorts (without this wg uses random port numbers)
+      # listenPort = 51820; # to match firewall allowedUDPPorts (without this wg uses random port numbers)
       privateKeyFile = "/etc/wireguard/privatekey";
-      postUp = ["wg set wg0 peer ${publicKey} persistent-keepalive 25"];
+      #postUp = ["wg set wg0 peer ${publicKey} persistent-keepalive 25"];
 
       peers = [
         {
@@ -57,6 +57,7 @@
     };
   };  
 
+  programs.udevil.enable = true;
   programs.wireshark.enable = true;
 
   # Set your time zone.
