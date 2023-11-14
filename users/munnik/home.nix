@@ -89,6 +89,7 @@ in
     thunderbird
     transmission-remote-gtk
     tree-sitter
+    ungoogled-chromium
     unzip
     flake-inputs.nixpkgs-unfree.legacyPackages.${pkgs.system}.vscode
     wget

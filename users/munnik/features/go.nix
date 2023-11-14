@@ -4,12 +4,12 @@
     delve
     gdlv
     go_1_21
-    # gofumpt
-    # golines
-    # gomodifytags
-    # gopls
+    gofumpt
+    golines
+    gomodifytags
+    gopls
     goreleaser
-    # gotests
-    # gotools
+    gotests
+    gotools
   ];
 }
