@@ -2,14 +2,13 @@
   description = "My system configuration";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
     nixpkgs-unfree = {
       url = "github:numtide/nixpkgs-unfree";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager = {
-      url = "github:nix-community/home-manager/release-23.05";
+      url = "github:nix-community/home-manager/release-23.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     hyprland.url = "github:hyprwm/Hyprland";
@@ -18,10 +17,6 @@
       inputs.nixpkgs.follows = "hyprland/nixpkgs";
     };
     eza.url = "github:eza-community/eza";
-    nixvim = {
-      url = "github:nix-community/nixvim/nixos-23.05";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
 
     # use `nix flake show` to display package content
   };
@@ -50,7 +45,6 @@
         modules = [
           ./users/munnik/home.nix
           inputs.hyprland.homeManagerModules.default
-          inputs.nixvim.homeManagerModules.nixvim     
         ];
         extraSpecialArgs.flake-inputs = inputs;
       };

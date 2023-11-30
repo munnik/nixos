@@ -59,6 +59,7 @@
 
   programs.udevil.enable = true;
   programs.wireshark.enable = true;
+  programs.kdeconnect.enable = true;
 
   # Set your time zone.
   time.timeZone = "Europe/Amsterdam";
@@ -132,6 +133,7 @@
       pkgs.xdg-desktop-portal-gtk
     ];
   };
+  xdg.portal.config.common.default = "*";
 
 
   hardware.nvidia = {
@@ -165,6 +167,7 @@
     };
   };
 
+  programs.hyprland.enableNvidiaPatches = true;
   environment.etc."greetd/environments".text = ''
     Hyprland
   '';
@@ -247,7 +250,6 @@
   environment.systemPackages = with pkgs; [
     networkmanagerapplet
     catppuccin-cursors
-    virt-manager
 
     pinentry-curses
     gnupg
@@ -257,13 +259,14 @@
     cage
   ];
 
-
+  programs.virt-manager.enable = true;
+  
   security.pam.services.swaylock = {};
 
   environment.shells = with pkgs; [ zsh ];
 
   fonts = {
-    fonts = with pkgs; [
+    packages = with pkgs; [
       nerdfonts
     ];
     fontDir.enable = true;

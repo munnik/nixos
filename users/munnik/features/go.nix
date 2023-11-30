@@ -1,9 +1,9 @@
 { pkgs, flake-inputs, ... }:
 {
-  home.packages = with flake-inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}; [
+  home.packages = with pkgs; [
     delve
     gdlv
-    go_1_21
+    go
     gofumpt
     golines
     gomodifytags

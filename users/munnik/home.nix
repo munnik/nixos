@@ -43,7 +43,7 @@ in
     ffmpeg_6-full
     flake-inputs.eza.packages.${pkgs.system}.default
     flake-inputs.hyprland-contrib.packages.${pkgs.system}.grimblast
-    flake-inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}.keepmenu
+    keepmenu
     fontconfig
     freecad
     fzf
@@ -148,7 +148,25 @@ in
   };
   xdg.dataFile = {
   };
+  xdg.mimeApps = {
+    enable = true;
+  
+    defaultApplications = {
+      "text/html" = "org.qutebrowser.qutebrowser.desktop";
+      "x-scheme-handler/http" = "librewolf.desktop";
+      "x-scheme-handler/https" = "librewolf.desktop";
+      "x-scheme-handler/about" = "librewolf.desktop";
+      "x-scheme-handler/unknown" = "librewolf.desktop";
+      "x-scheme-handler/msteams" = "teams-for-linux.desktop";
+      "x-scheme-handler/magnet" = "userapp-transmission-gtk-VM0V81.desktop";
+      "application/pdf" = "librewolf.desktop";
+      "application/zip" = "thunar.desktop";
+      "image/jpeg" = "org.gnome.Shotwell-Viewer.desktop";
+      "image/png" = "org.gnome.Shotwell-Viewer.desktop";
+      "application/json" = "code.desktop";
+    };
 
+  };
   # You can also manage environment variables but you will have to manually
   # source
   #
@@ -177,9 +195,8 @@ in
       XDG_SESSION_TYPE = "wayland";
   };
 
-  wayland.windowManager.hyprland = {
+    wayland.windowManager.hyprland = {
     enable = true;
-    enableNvidiaPatches = true;
     #recommendedEnvironment = true;
     extraConfig = ''
       monitor=,highres,auto,1
@@ -348,7 +365,7 @@ in
 
   programs.swaylock = {
     enable = true;
-    package = flake-inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}.swaylock-effects;
+    package = pkgs.swaylock-effects;
     settings = {
       ignore-empty-password = true;
       font = "${font}";
@@ -413,7 +430,7 @@ in
 
   programs.waybar = {
     enable = true;
-    package = flake-inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}.waybar;
+    package = pkgs.waybar;
     systemd = {
       enable = true;
       target = "hyprland-session.target";
