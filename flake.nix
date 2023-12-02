@@ -11,12 +11,6 @@
       url = "github:nix-community/home-manager/release-23.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    hyprland.url = "github:hyprwm/Hyprland";
-    hyprland-contrib = {
-      url = "github:hyprwm/contrib";
-      inputs.nixpkgs.follows = "hyprland/nixpkgs";
-    };
-    eza.url = "github:eza-community/eza";
 
     # use `nix flake show` to display package content
   };
@@ -44,7 +38,6 @@
         inherit pkgs;
         modules = [
           ./users/munnik/home.nix
-          inputs.hyprland.homeManagerModules.default
         ];
         extraSpecialArgs.flake-inputs = inputs;
       };

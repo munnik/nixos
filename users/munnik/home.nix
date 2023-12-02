@@ -38,11 +38,11 @@ in
     bc
     brightnessctl
     delta
+    eza
     fd
     feh
     ffmpeg_6-full
-    flake-inputs.eza.packages.${pkgs.system}.default
-    flake-inputs.hyprland-contrib.packages.${pkgs.system}.grimblast
+    grimblast
     keepmenu
     fontconfig
     freecad
@@ -290,7 +290,7 @@ in
       bindm = SUPER, mouse:272, movewindow
       bindm = SUPER, mouse:273, resizewindow
     '';
-    systemdIntegration = true;
+    systemd.enable = true;
     xwayland.enable = true;
   };
 
