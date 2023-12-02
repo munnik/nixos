@@ -156,6 +156,7 @@
   };
 
   services.passSecretService.enable = true;
+  services.languagetool.enable = true;
 
   services.greetd = {
     enable = true;

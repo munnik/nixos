@@ -28,11 +28,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1701319590,
-        "narHash": "sha256-AqOvhi/26Nl3ex6iJ9DxC/jMdgZ331VdrJTsjBrc490=",
+        "lastModified": 1701345817,
+        "narHash": "sha256-gSWxRea/A41dF9ja+lpYCVv2/NzUK5W50zzO1Y1izRo=",
         "owner": "eza-community",
         "repo": "eza",
-        "rev": "49aa2fd8c015dd7609df7a0b9a382c65168171a0",
+        "rev": "53fc475a9e6fa53cffe211ec8be8134e0d872b25",
         "type": "github"
       },
       "original": {
@@ -159,11 +159,11 @@
         "xdph": "xdph"
       },
       "locked": {
-        "lastModified": 1701310767,
-        "narHash": "sha256-aET9rumYD4L3VuZfHdJh8AbtOUzPYeIGTolmgTfZIrs=",
+        "lastModified": 1701451430,
+        "narHash": "sha256-uVrtDJUb5+WylStcz2M8Awx1MFNFzpGZwklaPtXv20Y=",
         "owner": "hyprwm",
         "repo": "Hyprland",
-        "rev": "776f944619168e1812e7f8bee0258757fed987a4",
+        "rev": "6e8b9ef7d8aa53247d5122b6641b9afa0df798df",
         "type": "github"
       },
       "original": {
@@ -300,11 +300,11 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1701156937,
-        "narHash": "sha256-jpMJOFvOTejx211D8z/gz0ErRtQPy6RXxgD2ZB86mso=",
+        "lastModified": 1701389149,
+        "narHash": "sha256-rU1suTIEd5DGCaAXKW6yHoCfR1mnYjOXQFOaH7M23js=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "7c4c20509c4363195841faa6c911777a134acdf3",
+        "rev": "5de0b32be6e85dc1a9404c75131316e4ffbc634c",
         "type": "github"
       },
       "original": {
@@ -477,18 +477,18 @@
       "flake": false,
       "locked": {
         "host": "gitlab.freedesktop.org",
-        "lastModified": 1701291624,
-        "narHash": "sha256-SWmzxn3gTyZOGEHgSDUJjJdoEKtt/kV6uWrUDx4JCC4=",
+        "lastModified": 1701368958,
+        "narHash": "sha256-7kvyoA91etzVEl9mkA/EJfB6z/PltxX7Xc4gcr7/xlo=",
         "owner": "wlroots",
         "repo": "wlroots",
-        "rev": "d7ecdad4e082cb5817806348de198679a11b35df",
+        "rev": "5d639394f3e83b01596dcd166a44a9a1a2583350",
         "type": "gitlab"
       },
       "original": {
         "host": "gitlab.freedesktop.org",
         "owner": "wlroots",
         "repo": "wlroots",
-        "rev": "d7ecdad4e082cb5817806348de198679a11b35df",
+        "rev": "5d639394f3e83b01596dcd166a44a9a1a2583350",
         "type": "gitlab"
       }
     },

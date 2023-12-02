@@ -53,11 +53,12 @@ in
     gnumake
     grim
     haruna
+    hunspell
+    hunspellDicts.nl_NL
     impl
     jq
     keepassxc
     kitty-themes
-    languagetool
     lf
     libnotify
     libreoffice
