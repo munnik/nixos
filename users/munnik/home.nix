@@ -92,7 +92,6 @@ in
     tree-sitter
     ungoogled-chromium
     unzip
-    flake-inputs.nixpkgs-unfree.legacyPackages.${pkgs.system}.vscode
     wget
     wayland-protocols
     wayland-utils
@@ -384,12 +383,12 @@ in
     newSession = true;
     escapeTime = 0;
 
-    plugins = with pkgs; [
-      tmuxPlugins.sensible
-      tmuxPlugins.catppuccin
-      tmuxPlugins.vim-tmux-navigator
-      tmuxPlugins.better-mouse-mode
-      tmuxPlugins.yank
+    plugins = with pkgs.tmuxPlugins; [
+      sensible
+      catppuccin
+      vim-tmux-navigator
+      better-mouse-mode
+      yank
     ];
     extraConfig = ''
       set-option -sa terminal-features ",xtermkitty:RGB"
@@ -788,6 +787,22 @@ tooltip {
       ];
       theme = "gnzh";
     };
+  };
+
+  programs.vscode = {
+    enable = true;
+    package = pkgs.vscodium;
+    extensions = with pkgs.vscode-extensions; [
+      usernamehw.errorlens
+      redhat.vscode-yaml
+      # ms-python.vscode-pylance
+      ms-python.python
+      ms-python.isort
+      ms-python.black-formatter
+      golang.go
+      catppuccin.catppuccin-vsc-icons
+      catppuccin.catppuccin-vsc
+    ];
   };
   
   gtk = {
