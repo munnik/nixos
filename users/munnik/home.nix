@@ -69,7 +69,6 @@ in
     nix-zsh-completions
     nodejs_20
     flake-inputs.nixpkgs-unfree.legacyPackages.${pkgs.system}.notable
-    flake-inputs.nixpkgs-unfree.legacyPackages.${pkgs.system}.webex
     pavucontrol
     perl
     peroxide
@@ -293,6 +292,8 @@ in
     systemd.enable = true;
     xwayland.enable = true;
   };
+
+  services.kdeconnect.enable = true;
 
   services.mako = {
     enable = true;
