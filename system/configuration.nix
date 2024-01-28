@@ -8,6 +8,7 @@
       ./hardware-configuration.nix
     ];
 
+  hardware.enableAllFirmware = true;
  
   nix.package = pkgs.nixFlakes;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -116,6 +117,19 @@
     };
   };
 
+  services.syncthing = {
+    enable = true;
+    # package = pkgs.syncthingtray;
+    dataDir = "/home/munnik";
+    openDefaultPorts = true;
+    configDir = "/home/munnik/.config/syncthing";
+    user = "munnik";
+    group = "users";
+    guiAddress = "127.0.0.1:8384";
+    overrideDevices = true;
+    overrideFolders = true;
+  };
+  
   services.xserver = {
     enable = true;
     videoDrivers = ["nvidia"];
@@ -210,7 +224,7 @@
     isNormalUser = true;
     initialPassword = "dunno";
     shell = pkgs.zsh;
-    extraGroups = [ "wheel" "libvirtd" "video" "docker" "input" "wireshark" ];
+    extraGroups = [ "wheel" "libvirtd" "video" "docker" "input" "wireshark" "dialout" ];
   };
 
   services.onedrive.enable = true;

@@ -10,7 +10,7 @@ let
   screensaverTimeout = 300;
 in
 {
-  home.username = "munnik";
+  home.username = "${userName}";
   home.homeDirectory = /home/munnik;
   home.stateVersion = "23.05";
 
@@ -249,7 +249,9 @@ in
         disable_hyprland_logo = yes
         disable_splash_rendering = yes
       }
-      bind = SUPER, Return, exec, kitty /bin/sh -c 'macchina && exec zsh'
+      # bind = SUPER, Return, exec, kitty /bin/sh -c 'maccina && exec zsh'
+      bind = SUPER, Return, exec, kitty tmux new -A -s kitty
+      bind = SUPER SHIFT, Return, exec, kitty
       bind = SUPER, W, killactive, 
       bind = SUPER, M, fullscreen, 
       bind = SUPER, E, exec, Thunar
@@ -292,8 +294,6 @@ in
     systemd.enable = true;
     xwayland.enable = true;
   };
-
-  services.kdeconnect.enable = true;
 
   services.mako = {
     enable = true;
@@ -772,6 +772,7 @@ tooltip {
 
   programs.zsh = {
     enable = true;
+    dotDir = ".config/zsh";
     enableCompletion = true;
     enableAutosuggestions = true;
     enableVteIntegration = true;
@@ -779,6 +780,13 @@ tooltip {
       eza = "eza --git --group --group-directories-first --header --long --icons --time-style=long-iso";
       watch = "watch --color";
     };
+    initExtra = ''
+    if [[ $- == *i* && $TMUX && ! $_DID_GREET ]]; then
+      macchina
+      tmux set-env _DID_GREET 1
+    fi
+
+    '';
     oh-my-zsh = {
       enable = true;
       plugins = [ 
@@ -792,7 +800,7 @@ tooltip {
 
   programs.vscode = {
     enable = true;
-    package = pkgs.vscodium;
+    package = flake-inputs.nixpkgs-unfree.legacyPackages.${pkgs.system}.vscode;
     extensions = with pkgs.vscode-extensions; [
       usernamehw.errorlens
       redhat.vscode-yaml
