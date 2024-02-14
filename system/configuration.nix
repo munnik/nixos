@@ -36,27 +36,35 @@
   #   allowedUDPPorts = [ 51820 ]; # Clients and peers can use the same port, see listenport
   # };
 
-  # Enable WireGuard
-  networking.wg-quick.interfaces = let
-    publicKey = "MhaYKOT9bs157g0qHin7nFg33zzpIzCk7O7Y0DbKJTo=";
-  in {
-    # "wg0" is the network interface name. You can name the interface arbitrarily.
-    wg0 = {
-      address = [ "10.24.0.10/16" ];
-      # listenPort = 51820; # to match firewall allowedUDPPorts (without this wg uses random port numbers)
-      privateKeyFile = "/etc/wireguard/privatekey";
-      #postUp = ["wg set wg0 peer ${publicKey} persistent-keepalive 25"];
+#   environment.etc.WireGuard-mconnection = let
+#     privateKey = builtins.readFile ./wireguard/privatekey;
+#   in {
+#     target = "NetworkManager/system-connections/WireGuard.nmconnection";    
+#     text = "
+# [connection]
+# id=wg0
+# uuid=0a604682-eaac-41c9-a6da-caee9b8f2762
+# type=wireguard
+# interface-name=wg0
 
-      peers = [
-        {
-          inherit publicKey;
-          allowedIPs = [ "10.24.0.0/16" ];
-          endpoint = "136.144.250.141:51820"; # ToDo: route to endpoint not automatically configured https://wiki.archlinux.org/index.php/WireGuard#Loop_routing https://discourse.nixos.org/t/solved-minimal-firewall-setup-for-wireguard-client/7577
-          persistentKeepalive = 25;
-        }
-      ];
-    };
-  };  
+# [wireguard]
+# private-key=${privateKey}
+
+# [wireguard-peer.MhaYKOT9bs157g0qHin7nFg33zzpIzCk7O7Y0DbKJTo=]
+# endpoint=136.144.250.141:51820
+# allowed-ips=10.24.0.0/16;
+
+# [ipv4]
+# address1=10.24.0.10/16
+# method=manual
+
+# [ipv6]
+# addr-gen-mode=default
+# method=disabled
+
+# [proxy]
+#     ";
+#   };
 
   programs.udevil.enable = true;
   programs.wireshark.enable = true;
@@ -303,9 +311,8 @@
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
+  networking.firewall.allowedUDPPorts = [ 51820 ];
+  networking.firewall.enable = true;
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you

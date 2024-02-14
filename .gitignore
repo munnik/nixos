@@ -1,1 +1,4 @@
 result/
+.gitsecret/keys/random_seed
+!*.secret
+wireguard/privatekey

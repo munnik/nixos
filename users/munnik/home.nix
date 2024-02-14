@@ -34,6 +34,7 @@ in
   home.packages = with pkgs; [
     acpi
     air
+    any-nix-shell
     bat
     bc
     brightnessctl
@@ -69,6 +70,7 @@ in
     nix-zsh-completions
     nodejs_20
     flake-inputs.nixpkgs-unfree.legacyPackages.${pkgs.system}.notable
+    onedrivegui
     pavucontrol
     perl
     peroxide
@@ -144,6 +146,7 @@ in
       '';
     };
     macchina.source = dotfiles/config/macchina;
+    oh-my-custom.source = dotfiles/config/oh-my-custom;
   };
   xdg.dataFile = {
   };
@@ -250,7 +253,7 @@ in
         disable_splash_rendering = yes
       }
       # bind = SUPER, Return, exec, kitty /bin/sh -c 'maccina && exec zsh'
-      bind = SUPER, Return, exec, kitty tmux new -A -s kitty
+      bind = SUPER, Return, exec, kitty zellij attach -c
       bind = SUPER SHIFT, Return, exec, kitty
       bind = SUPER, W, killactive, 
       bind = SUPER, M, fullscreen, 
@@ -343,6 +346,14 @@ in
     };
   };
 
+  programs.zellij = {
+    enable = true;
+    enableZshIntegration = true;
+    settings = {
+      theme = "catppuccin-mocha";
+    };
+  };
+
   programs.rofi = {
     enable = true;
     package = pkgs.rofi-wayland;
@@ -376,7 +387,7 @@ in
       effect-pixelate = 15;
     };
   };
-
+/*
   programs.tmux = {
     enable = true;
     clock24 = true;
@@ -428,7 +439,7 @@ in
       bind % split-window -h -c "#{pane_current_path}"
     '';
   };
-
+*/
   programs.waybar = {
     enable = true;
     package = pkgs.waybar;
@@ -781,20 +792,17 @@ tooltip {
       watch = "watch --color";
     };
     initExtra = ''
-    if [[ $- == *i* && $TMUX && ! $_DID_GREET ]]; then
-      macchina
-      tmux set-env _DID_GREET 1
-    fi
-
+    any-nix-shell zsh --info-right | source /dev/stdin
     '';
     oh-my-zsh = {
       enable = true;
       plugins = [ 
         "git" 
         "sudo" 
-        "tmux" 
       ];
-      theme = "gnzh";
+      custom = "$HOME/.config/oh-my-custom";
+      # theme = "gnzh";
+      theme = "agonoster-nix";
     };
   };
 
