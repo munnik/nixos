@@ -792,7 +792,7 @@ tooltip {
       watch = "watch --color";
     };
     initExtra = ''
-    any-nix-shell zsh --info-right | source /dev/stdin
+    any-nix-shell zsh | source /dev/stdin
     '';
     oh-my-zsh = {
       enable = true;
@@ -802,7 +802,7 @@ tooltip {
       ];
       custom = "$HOME/.config/oh-my-custom";
       # theme = "gnzh";
-      theme = "agonoster-nix";
+      theme = "agnoster-nix";
     };
   };
 
