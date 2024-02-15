@@ -290,6 +290,7 @@
   fonts = {
     packages = with pkgs; [
       nerdfonts
+      montserrat
     ];
     fontDir.enable = true;
   };
