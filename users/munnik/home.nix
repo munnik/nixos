@@ -44,6 +44,7 @@ in
     feh
     ffmpeg_6-full
     grimblast
+    jq
     keepmenu
     fontconfig
     freecad
@@ -76,15 +77,19 @@ in
     peroxide
     pgadmin4-desktopmode
     picard
+    pulseview
     python311
     ripgrep
     screen
     shotwell
     signal-desktop
+    sigrok-cli
+    sigrok-firmware-fx2lafw
     silver-searcher
     socat
     sshfs
     stylua
+    sway-audio-idle-inhibit
     swww
     teams-for-linux
     # flake-inputs.nixpkgs-unfree.legacyPackages.${pkgs.system}.teamviewer
@@ -206,6 +211,8 @@ in
       exec-once=swww init
       exec-once=swww img ${wallpaperPath}
       exec-once=ydotoold --socket-path=/run/user/${userId}/.ydotool_socket --socket-own=${userId}:${groupId}
+      exec-once=${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1 &
+      exec-once=${pkgs.sway-audio-idle-inhibit}/bin/sway-audio-idle-inhibit &
       input {
         kb_layout = us
         kb_variant =
@@ -253,7 +260,7 @@ in
         disable_splash_rendering = yes
       }
       # bind = SUPER, Return, exec, kitty /bin/sh -c 'maccina && exec zsh'
-      bind = SUPER, Return, exec, kitty zellij attach -c
+      bind = SUPER, Return, exec, kitty zellij attach --create default
       bind = SUPER SHIFT, Return, exec, kitty
       bind = SUPER, W, killactive, 
       bind = SUPER, M, fullscreen, 
@@ -348,7 +355,7 @@ in
 
   programs.zellij = {
     enable = true;
-    enableZshIntegration = true;
+    # enableZshIntegration = true;
     settings = {
       theme = "catppuccin-mocha";
     };
@@ -505,7 +512,7 @@ in
         };
         clock = {
           interval = 1;
-          format = "{: %H:%M:%S  %a, %e %b %Y}";
+          format = " {:%H:%M:%S  %a, %e %b %Y}";
           tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
         };
         backlight = {
@@ -785,9 +792,10 @@ tooltip {
     enable = true;
     dotDir = ".config/zsh";
     enableCompletion = true;
-    enableAutosuggestions = true;
+    autosuggestion.enable = true;
     enableVteIntegration = true;
     shellAliases = {
+      s = "kitten ssh";
       eza = "eza --git --group --group-directories-first --header --long --icons --time-style=long-iso";
       watch = "watch --color";
     };
