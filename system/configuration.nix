@@ -13,79 +13,55 @@
   nix.package = pkgs.nixFlakes;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nixpkgs.config.allowUnfree = true;
-  nix.gc = {
-    automatic = true;
-    options = "--delete-older-than 14d";
-  };
+  #nix.gc = {
+  #  automatic = true;
+  #  options = "--delete-older-than 14d";
+  #};
   nix.settings.auto-optimise-store = true;
   system.autoUpgrade.enable = true;
 
   # Use the systemd-boot EFI boot loader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.supportedFilesystems = [ "zfs" ];
-  boot.zfs.requestEncryptionCredentials = true;
+  boot = {
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+    };
+    supportedFilesystems = [ "zfs" ];
+    zfs.requestEncryptionCredentials = true;
+    consoleLogLevel = 3;
+    kernelParams = [ "quiet" ];
+  };
 
   networking.hostId = "5f63b4a9";
-  networking.hostName = "nixos"; # Define your hostname.
-  # Pick only one of the below networking options.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  networking.hostName = "turing"; # Define your hostname.
   networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
 
-  # networking.firewall = {
-  #   allowedUDPPorts = [ 51820 ]; # Clients and peers can use the same port, see listenport
-  # };
-
-#   environment.etc.WireGuard-mconnection = let
-#     privateKey = builtins.readFile ./wireguard/privatekey;
-#   in {
-#     target = "NetworkManager/system-connections/WireGuard.nmconnection";    
-#     text = "
-# [connection]
-# id=wg0
-# uuid=0a604682-eaac-41c9-a6da-caee9b8f2762
-# type=wireguard
-# interface-name=wg0
-
-# [wireguard]
-# private-key=${privateKey}
-
-# [wireguard-peer.MhaYKOT9bs157g0qHin7nFg33zzpIzCk7O7Y0DbKJTo=]
-# endpoint=136.144.250.141:51820
-# allowed-ips=10.24.0.0/16;
-
-# [ipv4]
-# address1=10.24.0.10/16
-# method=manual
-
-# [ipv6]
-# addr-gen-mode=default
-# method=disabled
-
-# [proxy]
-#     ";
-#   };
+  stylix = {
+    enable = true;
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
+    image = /home/munnik/.local/share/wallpaper/wallpaper.png;
+    cursor = {
+      package = pkgs.bibata-cursors;
+      name = "Bibata-Modern-Ice";
+      size = 20;
+    };
+  };
 
   programs.udevil.enable = true;
   programs.wireshark.enable = true;
 
+  programs.nh = {
+    enable = true;
+    clean = {
+      enable = true;
+      extraArgs = "--keep-since 7d --keep 5";
+    };
+    flake = /home/munnik/Code/nixos;
+  };
+
+
   # Set your time zone.
   time.timeZone = "Europe/Amsterdam";
-
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Select internationalisation properties.
-  # i18n.defaultLocale = "en_US.UTF-8";
-  # console = {
-  #   font = "Lat2-Terminus16";
-  #   keyMap = "us";
-  #   useXkbConfig = true; # use xkbOptions in tty.
-  # };
-
-  # Enable the X11 windowing system.
-  # services.xserver.enable = true;
 
   powerManagement = {
     enable = true;
@@ -138,43 +114,27 @@
     overrideFolders = true;
   };
   
-  services.xserver = {
-    enable = true;
-    videoDrivers = ["nvidia"];
-    # displayManager.gdm = {
-    #     enable = true;
-    #     wayland = true;
-    # };
-  };
+#  services.xserver = {
+#    enable = true;
+#    videoDrivers = ["nvidia"];
+#  };
   services.dbus.enable = true;
   xdg.portal = {
     enable = true;
     wlr.enable = true;
-    extraPortals = [
-      pkgs.xdg-desktop-portal-gtk
+    extraPortals = with pkgs; [
+      # xdg-desktop-portal-gtk
+      # xdg-desktop-portal-wlr
+      xdg-desktop-portal-hyprland
     ];
   };
-  xdg.portal.config.common.default = "*";
-
 
   hardware.nvidia = {
-    # prime = {
-    #   offload = {
-    #     enable = true;
-    #     enableOffloadCmd = true;
-    #   };
-
-    #   intelBusId = "PCI:0:2:0";
-    #   nvidiaBusId = "PCI:1:0:0";
-    # };
+    open = false;
     modesetting.enable = true;
   };
 
-  hardware.opengl = {
-    enable = true;
-    driSupport = true;
-    driSupport32Bit = true;
-  };
+  hardware.graphics.enable = true;
 
   services.passSecretService.enable = true;
   services.languagetool.enable = true;
@@ -189,7 +149,6 @@
     };
   };
 
-  #programs.hyprland.enableNvidiaPatches = true;
   environment.etc."greetd/environments".text = ''
     Hyprland
   '';
@@ -203,7 +162,10 @@
   # services.xserver.xkbOptions = "eurosign:e,caps:escape";
 
   # Enable CUPS to print documents.
-  services.printing.enable = true;
+  services.printing = {
+    enable = true;
+    drivers = with pkgs; [ splix ];
+  };
   services.avahi.enable = true;
   services.avahi.nssmdns4 = true;
   # for a WiFi printer
@@ -667,12 +629,12 @@ LABEL="libsigrok_rules_plugdev_end"
     thunar-volman
     thunar-media-tags-plugin
   ];
+  programs.hyprland.enable = true;
   services.gvfs.enable = true; # Mount, trash, and other functionalities
   services.tumbler.enable = true; # Thumbnail support for images
   services.pcscd.enable = true;
   programs.gnupg.agent = {
     enable = true;
-    #pinentryFlavor = "curses";
     enableSSHSupport = true;
   };
 
@@ -682,13 +644,9 @@ LABEL="libsigrok_rules_plugdev_end"
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     networkmanagerapplet
-    catppuccin-cursors
-
     pinentry-curses
     gnupg
-
     home-manager
-
     cage
   ];
 

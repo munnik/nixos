@@ -1,3 +1,0 @@
-inherits = "catppucin"
-
-"ui.bufferline.active" = { fg = "mauve", bg = "base" }
