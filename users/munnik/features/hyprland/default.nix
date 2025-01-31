@@ -62,7 +62,7 @@ in
       };
       bind =
         [
-          "SUPER, Return, exec, alacritty"
+          "SUPER, Return, exec, wezterm"
           "SUPER, Space, exec, rofi -show drun -show-icons"
           "SUPER, W, killactive, "
           "SUPER, M, fullscreen, "
@@ -229,7 +229,7 @@ in
       modi = "drun";
       icon-theme = "Oranchelo";
       show-icons = true;
-      terminal = "${pkgs.alacritty}/bin/alacritty";
+      terminal = "${pkgs.wezterm}/bin/wezterm";
       drun-display-format = "{icon} {name}";
       location = 0;
       disable-history = false;

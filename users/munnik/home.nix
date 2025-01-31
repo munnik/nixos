@@ -32,6 +32,7 @@ in
     ./features/git
     ./features/hyprland
     ./features/onedrive
+    ./features/wezterm
   ];
 
   # This value determines the Home Manager release that your configuration is
@@ -152,7 +153,7 @@ in
 
         pw_cache_period_min = 5
         editor = hx
-        terminal = ${pkgs.alacritty}/bin/alacritty
+        terminal = ${pkgs.wezterm}/bin/wezterm
         type_library = ydotool
 
         hide_groups = Recycle Bin
@@ -217,8 +218,6 @@ in
   };
 
   programs.btop.enable = true;
-
-  programs.alacritty.enable = true;
 
   programs.yazi = {
     enable = true;
