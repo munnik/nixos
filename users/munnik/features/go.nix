@@ -7,10 +7,13 @@
     go
     gofumpt
     golines
+    golint
     gomodifytags
     gopls
     goreleaser
     gotests
     gotools
+
+    glibc
   ];
 }

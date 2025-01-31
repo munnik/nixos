@@ -1,4 +1,9 @@
-{ config, pkgs, inputs, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
 let
   userName = "munnik";
   userId = "1000";
@@ -10,16 +15,16 @@ let
 in
 {
   home.sessionVariables = {
-      # GDK_BACKEND = "wayland,x11";
-      # GDK_SCALE = "1";
-      # MOZ_ENABLE_WAYLAND = "1";
-      # NIXOS_OZONE_WL = "1";
-      # WLR_DRM_DEVICES = "/dev/dri/card1:/dev/dri/card0";
-      # WLR_NO_HARDWARE_CURSORS = "1";
-      # XCURSOR_SIZE = "32";
-      # XCURSOR_THEME = "Bibata-Modern-Classic";
-      # XDG_CURRENT_DESKTOP = "Hyprland";
-      # XDG_SESSION_DESKTOP = "Hyprland";
+    # GDK_BACKEND = "wayland,x11";
+    # GDK_SCALE = "1";
+    # MOZ_ENABLE_WAYLAND = "1";
+    # NIXOS_OZONE_WL = "1";
+    # WLR_DRM_DEVICES = "/dev/dri/card1:/dev/dri/card0";
+    # WLR_NO_HARDWARE_CURSORS = "1";
+    # XCURSOR_SIZE = "32";
+    # XCURSOR_THEME = "Bibata-Modern-Classic";
+    # XDG_CURRENT_DESKTOP = "Hyprland";
+    # XDG_SESSION_DESKTOP = "Hyprland";
   };
 
   wayland.windowManager.hyprland = {
@@ -35,7 +40,8 @@ in
         "XDG_SESSION_TYPE,wayland"
       ];
       monitor = [
-        "eDP-1,highres,auto,1"
+        "eDP-1,1920x1080,0x0,1"
+        "DP-3,2560x1440,-200x-1440,1"
       ];
       exec-once = [
         "${pkgs.ydotool}/bin/ydotoold &"
@@ -54,43 +60,48 @@ in
       misc = {
         disable_hyprland_logo = true;
       };
-      bind = [
-        "SUPER, Return, exec, alacritty"
-        "SUPER, Space, exec, rofi -show drun -show-icons"
-        "SUPER, W, killactive, "
-        "SUPER, M, fullscreen, "
-        "SUPER, E, exec, Thunar"
-        "SUPER, F, togglefloating, "
-        "SUPER, F, centerwindow, "
-        "SUPER, L, exec, loginctl lock-session"
-        "SUPER, J, togglesplit, # dwindle"
-        "SUPER, P, exec, keepmenu"
-        "SUPER, left, movefocus, l"
-        "SUPER, right, movefocus, r"
-        "SUPER, up, movefocus, u"
-        "SUPER, down, movefocus, d"
-        "SUPER, S, exec, hyprshot -m output"
-        "SUPER_SHIFT, S, exec, hyprshot -m window"
-        "SHIFT_ALT, S, exec, hyprshot -m region"
-        "SUPER, mouse_down, workspace, e+1"
-        "SUPER, mouse_up, workspace, e-1"
-      ]
-      ++ (
-        # workspaces
-        # binds $mod + [shift +] {1..10} to [move to] workspace {1..10}
-        builtins.concatLists (builtins.genList (
-            x: let
-              ws = let
-                c = (x + 1) / 10;
+      bind =
+        [
+          "SUPER, Return, exec, alacritty"
+          "SUPER, Space, exec, rofi -show drun -show-icons"
+          "SUPER, W, killactive, "
+          "SUPER, M, fullscreen, "
+          "SUPER, E, exec, Thunar"
+          "SUPER, F, togglefloating, "
+          "SUPER, F, centerwindow, "
+          "SUPER, L, exec, loginctl lock-session"
+          "SUPER, J, togglesplit, # dwindle"
+          "SUPER, P, exec, keepmenu"
+          "SUPER, left, movefocus, l"
+          "SUPER, right, movefocus, r"
+          "SUPER, up, movefocus, u"
+          "SUPER, down, movefocus, d"
+          "SUPER, S, exec, hyprshot -m output"
+          "SUPER_SHIFT, S, exec, hyprshot -m window"
+          "SHIFT_ALT, S, exec, hyprshot -m region"
+          "SUPER, mouse_down, workspace, e+1"
+          "SUPER, mouse_up, workspace, e-1"
+        ]
+        ++ (
+          # workspaces
+          # binds $mod + [shift +] {1..10} to [move to] workspace {1..10}
+          builtins.concatLists (
+            builtins.genList (
+              x:
+              let
+                ws =
+                  let
+                    c = (x + 1) / 10;
+                  in
+                  builtins.toString (x + 1 - (c * 10));
               in
-                builtins.toString (x + 1 - (c * 10));
-            in [
-              "SUPER, ${ws}, workspace, ${toString (x + 1)}"
-              "SUPER SHIFT, ${ws}, movetoworkspacesilent, ${toString (x + 1)}"
-            ]
+              [
+                "SUPER, ${ws}, workspace, ${toString (x + 1)}"
+                "SUPER SHIFT, ${ws}, movetoworkspacesilent, ${toString (x + 1)}"
+              ]
+            ) 10
           )
-          10)
-      );
+        );
       bindm = [
         "SUPER, mouse:272, movewindow"
         "SUPER, mouse:273, resizewindow"
@@ -105,12 +116,16 @@ in
 
   home.packages = with pkgs; [
     hyprshot
+    polkit_gnome
     slurp
+    (lib.hiPrio hyprland-protocols)
     wayland-protocols
     wayland-utils
     wl-clipboard
     wlroots
+    wlr-randr
     ydotool
+    xdg-desktop-portal-hyprland
   ];
 
   services.hypridle = {
@@ -149,54 +164,56 @@ in
         hide_cursor = true;
         no_fade_in = false;
       };
-      background = {
-        path = "screenshot";
-        blur_passes = 1;
-        blur_size = 15;
-        noise = 0;
-      };
-      input-field = [
-        {
-          size = "200, 50";
-          position = "0, -80";
-          monitor = "";
-          dots_center = true;
-          fade_on_empty = true;
-          fade_timeout = 500;
-          font_color = "rgb(202, 211, 245)";
-          inner_color = "rgb(91, 96, 120)";
-          outer_color = "rgb(24, 25, 38)";
-          outline_thickness = 5;
-          placeholder_text = "<span foreground=\"##cad3f5\">Password...</span>";
-          shadow_passes = 2;
-        }
-      ];
-      label = [ 
-        {
-          monitor = "";
-          text = "cmd[update:500] echo \"$TIME\"";
-          color = "rgba(200, 200, 200, 1.0)";
-          font_size = 55;
-          font_family = font;
-          position = "-100, -40";
-          halign = "right";
-          valign = "bottom";
-          shadow_passes = 5;
-          shadow_size = 10;
-        }
-        {
-          monitor = "";
-          text = "$USER";
-          color = "rgba(200, 200, 200, 1.0)";
-          font_size = 20;
-          font_family = font;
-          position = "-100, 160";
-          halign = "right";
-          valign = "bottom";
-          shadow_passes = 5;
-          shadow_size = 10;
-        }
-      ];
+      /*
+        background = {
+          path = "screenshot";
+          blur_passes = 1;
+          blur_size = 15;
+          noise = 0;
+        };
+        input-field = [
+          {
+            size = "200, 50";
+            position = "0, -80";
+            monitor = "";
+            dots_center = true;
+            fade_on_empty = true;
+            fade_timeout = 500;
+            font_color = "rgb(202, 211, 245)";
+            inner_color = "rgb(91, 96, 120)";
+            outer_color = "rgb(24, 25, 38)";
+            outline_thickness = 5;
+            placeholder_text = "<span foreground=\"##cad3f5\">Password...</span>";
+            shadow_passes = 2;
+          }
+        ];
+        label = [
+          {
+            monitor = "";
+            text = "cmd[update:500] echo \"$TIME\"";
+            color = "rgba(200, 200, 200, 1.0)";
+            font_size = 55;
+            font_family = font;
+            position = "-100, 40";
+            halign = "right";
+            valign = "bottom";
+            shadow_passes = 5;
+            shadow_size = 10;
+          }
+          {
+            monitor = "";
+            text = "$USER";
+            color = "rgba(200, 200, 200, 1.0)";
+            font_size = 20;
+            font_family = font;
+            position = "-100, 160";
+            halign = "right";
+            valign = "bottom";
+            shadow_passes = 5;
+            shadow_size = 10;
+          }
+        ];
+      */
     };
   };
 
@@ -204,11 +221,11 @@ in
     enable = true;
     defaultTimeout = 7500;
   };
-  
+
   programs.rofi = {
     enable = true;
     package = pkgs.rofi-wayland;
-    extraConfig = { 
+    extraConfig = {
       modi = "drun";
       icon-theme = "Oranchelo";
       show-icons = true;
@@ -261,7 +278,16 @@ in
         "hyprland/workspaces" = {
           format = "{icon}";
           persistent_workspaces = {
-            "*" = 10;
+            "1" = [ ];
+            "2" = [ ];
+            "3" = [ ];
+            "4" = [ ];
+            "5" = [ ];
+            "6" = [ ];
+            "7" = [ ];
+            "8" = [ ];
+            "9" = [ ];
+            "10" = [ ];
           };
           format-icons = {
             "1" = "1";
@@ -295,7 +321,11 @@ in
         backlight = {
           device = "intel_backlight";
           format = "{icon} {percent:3}%";
-          format-icons = ["󰃞" "󰃟" "󰃠"];
+          format-icons = [
+            "󰃞"
+            "󰃟"
+            "󰃠"
+          ];
           on-scroll-up = "${pkgs.brightnessctl}/bin/brightnessctl set 1%+";
           on-scroll-down = "${pkgs.brightnessctl}/bin/brightnessctl set 1%-";
           reverse-mouse-scrolling = true;
@@ -314,7 +344,19 @@ in
           format-charging = " {capacity:3}%";
           format-plugged = " {capacity:3}%";
           format-alt = "{icon} {time}";
-          format-icons = ["󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹"];
+          format-icons = [
+            "󰂎"
+            "󰁺"
+            "󰁻"
+            "󰁼"
+            "󰁽"
+            "󰁾"
+            "󰁿"
+            "󰂀"
+            "󰂁"
+            "󰂂"
+            "󰁹"
+          ];
         };
         pulseaudio = {
           format = "{icon} {volume:3}%";
@@ -331,7 +373,11 @@ in
             phone = "";
             portable = "";
             car = "";
-            default = ["" "" ""];
+            default = [
+              ""
+              ""
+              ""
+            ];
           };
         };
         "pulseaudio#microphone" = {
@@ -383,185 +429,185 @@ in
         memory = {
           interval = 1;
           format = " {:2}%";
-        };          
+        };
         disk = {
           interval = 10;
           format = "󰋊 {percentage_used:2}%";
-        };          
+        };
       };
     };
     style = ''
-/*
-*
-* Catppuccin Mocha palette
-* Maintainer: rubyowo
-*
-*/
+      /*
+      *
+      * Catppuccin Mocha palette
+      * Maintainer: rubyowo
+      *
+      */
 
-@define-color base   #1e1e2e;
-@define-color mantle #181825;
-@define-color crust  #11111b;
+      @define-color base   #1e1e2e;
+      @define-color mantle #181825;
+      @define-color crust  #11111b;
 
-@define-color text     #cdd6f4;
-@define-color subtext0 #a6adc8;
-@define-color subtext1 #bac2de;
+      @define-color text     #cdd6f4;
+      @define-color subtext0 #a6adc8;
+      @define-color subtext1 #bac2de;
 
-@define-color surface0 #313244;
-@define-color surface1 #45475a;
-@define-color surface2 #585b70;
+      @define-color surface0 #313244;
+      @define-color surface1 #45475a;
+      @define-color surface2 #585b70;
 
-@define-color overlay0 #6c7086;
-@define-color overlay1 #7f849c;
-@define-color overlay2 #9399b2;
+      @define-color overlay0 #6c7086;
+      @define-color overlay1 #7f849c;
+      @define-color overlay2 #9399b2;
 
-@define-color blue      #89b4fa;
-@define-color lavender  #b4befe;
-@define-color sapphire  #74c7ec;
-@define-color sky       #89dceb;
-@define-color teal      #94e2d5;
-@define-color green     #a6e3a1;
-@define-color yellow    #f9e2af;
-@define-color peach     #fab387;
-@define-color maroon    #eba0ac;
-@define-color red       #f38ba8;
-@define-color mauve     #cba6f7;
-@define-color pink      #f5c2e7;
-@define-color flamingo  #f2cdcd;
-@define-color rosewater #f5e0dc;
+      @define-color blue      #89b4fa;
+      @define-color lavender  #b4befe;
+      @define-color sapphire  #74c7ec;
+      @define-color sky       #89dceb;
+      @define-color teal      #94e2d5;
+      @define-color green     #a6e3a1;
+      @define-color yellow    #f9e2af;
+      @define-color peach     #fab387;
+      @define-color maroon    #eba0ac;
+      @define-color red       #f38ba8;
+      @define-color mauve     #cba6f7;
+      @define-color pink      #f5c2e7;
+      @define-color flamingo  #f2cdcd;
+      @define-color rosewater #f5e0dc;
 
-* {
-  border: none;
-  border-radius: 0;
-  font-family: "JetBrainsMono Nerd Font";
-  font-weight: bold;
-  font-size: 11px;
-  min-height: 0;
-  transition: 0.3s;
-}
+      * {
+        border: none;
+        border-radius: 0;
+        font-family: "JetBrainsMono Nerd Font";
+        font-weight: bold;
+        font-size: 11px;
+        min-height: 0;
+        transition: 0.3s;
+      }
 
-window#waybar {
-  background: rgba(0, 0, 0, 0);
-}
+      window#waybar {
+        background: rgba(0, 0, 0, 0);
+      }
 
-tooltip {
-  background: @base;
-  border-width: 1.5px;
-  border-style: solid;
-  border-color: @crust;
-  transition: 0.3s;
-}
+      tooltip {
+        background: @base;
+        border-width: 1.5px;
+        border-style: solid;
+        border-color: @crust;
+        transition: 0.3s;
+      }
 
-#window,
-#clock,
-#battery,
-#pulseaudio,
-#network,
-#bluetooth,
-#temperature,
-#workspaces,
-#cpu,
-#memory,
-#disk,
-#custom-power,
-#backlight {
-  background: @base;
-  color: @text;
-  padding: 0 8px 0 8px;
-  border: 2px solid @mantle;
-}
+      #window,
+      #clock,
+      #battery,
+      #pulseaudio,
+      #network,
+      #bluetooth,
+      #temperature,
+      #workspaces,
+      #cpu,
+      #memory,
+      #disk,
+      #custom-power,
+      #backlight {
+        background: @base;
+        color: @text;
+        padding: 0 8px 0 8px;
+        border: 2px solid @mantle;
+      }
 
-#workspaces {
-  background: @base;
-  border-left: 0;
-}
+      #workspaces {
+        background: @base;
+        border-left: 0;
+      }
 
-#workspaces button {
-  color: @blue;
-}
+      #workspaces button {
+        color: @blue;
+      }
 
-#workspaces button:hover {
-  box-shadow: inherit;
-  text-shadow: inherit;
-  background: @base;
-  color: @crust;
-}
+      #workspaces button:hover {
+        box-shadow: inherit;
+        text-shadow: inherit;
+        background: @base;
+        color: @crust;
+      }
 
-#workspaces button.active {
-  color: @green;
-}
+      #workspaces button.active {
+        color: @green;
+      }
 
-#workspaces button.urgent {
-  color: @red;
-  background: @crust;
-}
+      #workspaces button.urgent {
+        color: @red;
+        background: @crust;
+      }
 
-#workspaces button.persistent {
-  color: @text;
-}
+      #workspaces button.persistent {
+        color: @text;
+      }
 
-#temperature {
-  border-left: 0;
-  border-right: 0;
-}
+      #temperature {
+        border-left: 0;
+        border-right: 0;
+      }
 
-#temperature.critical {
-  color: @red;
-}
+      #temperature.critical {
+        color: @red;
+      }
 
-#cpu {
-  border-left: 0;
-  border-right: 0;
-}
+      #cpu {
+        border-left: 0;
+        border-right: 0;
+      }
 
-#memory {
-  border-left: 0;
-  border-right: 0;
-}
+      #memory {
+        border-left: 0;
+        border-right: 0;
+      }
 
-#disk {
-  border-left: 0;
-  padding-right: 10px;
-}
+      #disk {
+        border-left: 0;
+        padding-right: 10px;
+      }
 
-#backlight {
-  border-right: 0;
-  padding-left: 10px;
-}
+      #backlight {
+        border-right: 0;
+        padding-left: 10px;
+      }
 
-#window {
-  padding-left: 10px;
-  padding-right: 10px;
-}
+      #window {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
 
-#clock {
-  border-right: 0;
-  padding-left: 10px;
-}
+      #clock {
+        border-right: 0;
+        padding-left: 10px;
+      }
 
-#network {
-  border-left: 0;
-  border-right: 0;
-}
+      #network {
+        border-left: 0;
+        border-right: 0;
+      }
 
-#bluetooth {
-  border-left: 0;
-  border-right: 0;
-} 
+      #bluetooth {
+        border-left: 0;
+        border-right: 0;
+      } 
 
-#pulseaudio {
-  border-left: 0;
-  border-right: 0;
-}
+      #pulseaudio {
+        border-left: 0;
+        border-right: 0;
+      }
 
-#pulseaudio.microphone {
-  border-left: 0;
-  border-left: 0;
-}
+      #pulseaudio.microphone {
+        border-left: 0;
+        border-left: 0;
+      }
 
-#battery {
-  border-left: 0;
-  border-right: 0;
-}
-   '';
+      #battery {
+        border-left: 0;
+        border-right: 0;
+      }
+    '';
   };
 }

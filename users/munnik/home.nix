@@ -1,7 +1,26 @@
-{ config, lib, pkgs, flake-inputs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  flake-inputs,
+  ...
+}:
 let
   userName = "munnik";
   homeDirectory = "/home/${userName}";
+
+  agnoster-nix-theme = builtins.fetchurl {
+    url = "https://gist.githubusercontent.com/CollinDewey/2e6b6c5b257d2f6895603ddb160e6f1d/raw/804f5d1bd9cb37c18cba252ff4eebf62dadc5c7f/agnoster-nix.zsh-theme";
+    sha256 = "9E8E7633378E43EA3AC2A9A0ED3E361820C267A0EA290F8D8F64FC2482AF867F";
+  };
+  customDir = pkgs.stdenv.mkDerivation {
+    name = "oh-my-zsh-custom-dir";
+    phases = [ "buildPhase" ];
+    buildPhase = ''
+      mkdir -p $out/themes
+      cp ${agnoster-nix-theme} $out/themes/agnoster-nix.zsh-theme
+    '';
+  };
 in
 {
   home.username = "${userName}";
@@ -12,6 +31,7 @@ in
     ./features/helix
     ./features/git
     ./features/hyprland
+    ./features/onedrive
   ];
 
   # This value determines the Home Manager release that your configuration is
@@ -26,7 +46,9 @@ in
   # environment.
   home.packages = with pkgs; [
     acpi
+    age
     air
+    alejandra
     any-nix-shell
     bat
     bc
@@ -39,7 +61,7 @@ in
     jq
     keepmenu
     fontconfig
-    freecad
+    #freecad
     fzf
     fzf-zsh
     gcc
@@ -47,6 +69,7 @@ in
     gnumake
     haruna
     hunspell
+    hunspellDicts.en_US
     hunspellDicts.nl_NL
     impl
     jq
@@ -59,16 +82,20 @@ in
     macchina
     nil
     nix-zsh-completions
+    nixd
     nodejs_20
     flake-inputs.nixpkgs-unfree.legacyPackages.${pkgs.system}.notable
+    nss
     onedrivegui
     pavucontrol
     perl
-    peroxide
-    pgadmin4-desktopmode
+    #peroxide
+    #pgadmin4-desktopmode
     picard
+    postgresql_16
     pulseview
     python311
+    qelectrotech
     ripgrep
     screen
     shotwell
@@ -77,6 +104,7 @@ in
     sigrok-firmware-fx2lafw
     silver-searcher
     socat
+    sops
     sshfs
     stylua
     teams-for-linux
@@ -86,6 +114,7 @@ in
     tree-sitter
     ungoogled-chromium
     unzip
+    wayfarer
     wget
     wireshark
     zip
@@ -109,7 +138,6 @@ in
   };
 
   xdg.configFile = {
-    #btop.source = dotfiles/config/btop;
     keepmenu = {
       target = "keepmenu/config.ini";
       text = ''
@@ -127,17 +155,15 @@ in
         terminal = ${pkgs.alacritty}/bin/alacritty
         type_library = ydotool
 
-        hide_groups = Recycle Bin      
+        hide_groups = Recycle Bin
       '';
     };
-    #macchina.source = dotfiles/config/macchina;
-    oh-my-custom.source = dotfiles/config/oh-my-custom;
   };
   xdg.dataFile = {
   };
   xdg.mimeApps = {
     enable = true;
-  
+
     defaultApplications = {
       "text/html" = "org.qutebrowser.qutebrowser.desktop";
       "x-scheme-handler/http" = "librewolf.desktop";
@@ -165,25 +191,30 @@ in
   #
   # if you don't want to manage your shell through Home Manager.
   home.sessionVariables = {
-      # https://github.com/hyprwm/Hyprland/issues/1878
-      # GBM_BACKEND = "nvidia-drm";
-      # GDK_BACKEND = "wayland,x11";
-      # GDK_SCALE = "1";
-      # __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-      # LIBVA_DRIVER_NAME = "nvidia";
-      # MOZ_ENABLE_WAYLAND = "1";
-      # NIXOS_OZONE_WL = "1";
-      # WLR_DRM_DEVICES = "/dev/dri/card1:/dev/dri/card0";
-      # WLR_NO_HARDWARE_CURSORS = "1";
-      # XCURSOR_SIZE = "32";
-      # XCURSOR_THEME = "Bibata-Modern-Classic";
-      # XDG_CURRENT_DESKTOP = "Hyprland";
-      # XDG_SESSION_DESKTOP = "Hyprland";
-      # XDG_SESSION_TYPE = "wayland";
+    # https://github.com/hyprwm/Hyprland/issues/1878
+    # GBM_BACKEND = "nvidia-drm";
+    # GDK_BACKEND = "wayland,x11";
+    # GDK_SCALE = "1";
+    # __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+    # LIBVA_DRIVER_NAME = "nvidia";
+    # MOZ_ENABLE_WAYLAND = "1";
+    # NIXOS_OZONE_WL = "1";
+    # WLR_DRM_DEVICES = "/dev/dri/card1:/dev/dri/card0";
+    # WLR_NO_HARDWARE_CURSORS = "1";
+    # XCURSOR_SIZE = "32";
+    # XCURSOR_THEME = "Bibata-Modern-Classic";
+    # XDG_CURRENT_DESKTOP = "Hyprland";
+    # XDG_SESSION_DESKTOP = "Hyprland";
+    # XDG_SESSION_TYPE = "wayland";
   };
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
+  programs.direnv = {
+    enable = true;
+    enableZshIntegration = true;
+    nix-direnv.enable = true;
+  };
 
   programs.btop.enable = true;
 
@@ -205,17 +236,17 @@ in
       watch = "watch --color";
     };
     initExtra = ''
-    any-nix-shell zsh | source /dev/stdin
+      any-nix-shell zsh | source /dev/stdin
     '';
     oh-my-zsh = {
       enable = true;
-      plugins = [ 
-        "git" 
-        "sudo" 
+      plugins = [
+        "git"
+        "sudo"
         "fzf"
       ];
-      custom = "$HOME/.config/oh-my-custom";
       theme = "agnoster-nix";
+      custom = "${customDir}";
     };
   };
 
@@ -232,7 +263,6 @@ in
       golang.go
     ];
   };
-  
+
   gtk.enable = true;
 }
-
