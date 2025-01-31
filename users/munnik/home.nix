@@ -33,6 +33,7 @@ in
     ./features/hyprland
     ./features/onedrive
     ./features/wezterm
+    ./features/zed-editor
   ];
 
   # This value determines the Home Manager release that your configuration is
